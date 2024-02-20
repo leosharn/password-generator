@@ -283,7 +283,8 @@ for i in range(len(greeting)):
 output_text.configure(state='disabled')
 
 
-# MAIN BUTTON SETTINGS
+# MAIN BUTTON SETTINGS, DO NOT MODIFY
+# HEART OF GENERATOR
 def put_temp(temp):
     """The function for generating the total value"""
     temp = is_digits(is_digits_check, temp)
@@ -293,28 +294,35 @@ def put_temp(temp):
     for_gen = is_problematic(is_problematic_check, for_gen)
     output_text.configure(state='normal')
     output_text.delete('1.0', 'end')
-    list_gen = []
-    while True:
-        shuffled = list(for_gen)  
-        random.shuffle(shuffled)
-        generated_string = (''.join(shuffled))[:length]
-        if (is_digits_check and not any(c.isdigit() for c in generated_string)) \
-            or (is_lower_check and not any(c.islower() for c in generated_string)) \
-            or (is_upper_check and not any(c.isupper() for c in generated_string)) \
-            or (is_punctual_check and not any(c in '!#$%&*+-=?@^_' for c in generated_string)) \
-            or (sum(c in '!#$%&*+-=?@^_' for c in generated_string) > 1
-            or (sum(c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' for c in generated_string) > 2)):
-            # If at least one of the conditions is not met, i.e. the generated string does not meet the requirements
+    # Check if at least one checkbox is checked
+    if (not (is_digits_check or is_lower_check or is_upper_check or is_punctual_check)) :
+        output_text.configure(state='normal')
+        output_text.delete('1.0', 'end')
+        output_text.insert(tk.END, "Please select at least one attribute for password generation")
+        output_text.configure(state='disabled')
+    else:
+        list_gen = []
+        while True:
+            shuffled = list(for_gen)
+            random.shuffle(shuffled)
+            generated_string = (''.join(shuffled))[:length]
+            if ((is_digits_check and not any(c.isdigit() for c in generated_string)) or
+                (is_lower_check and not any(c.islower() for c in generated_string)) or
+                (is_upper_check and not any(c.isupper() for c in generated_string)) or
+                (is_punctual_check and not any(c in '!#$%&*+-=?@^_' for c in generated_string)) or
+                (sum(c in '!#$%&*+-=?@^_' for c in generated_string) > 1) or
+                (sum(c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' for c in generated_string) > 2)):
                 continue
 
-        if generated_string in list_gen: #if the generated value is already in the list of results, then skip it and do not use it.
-            continue
-        list_gen.append(generated_string)
-        if len(list_gen) == 10: #if the list is filled with 10 passwords, we interrupt the cycle
-            break
-    for lst in list_gen:
-        output_text.insert(tk.END, f'{lst}\n') #inserting the generation results into the output_txt column
-    output_text.configure(state='disabled')
+            if generated_string in list_gen:
+                continue
+            list_gen.append(generated_string)
+            if len(list_gen) == 10:
+                break
+
+        for lst in list_gen:
+            output_text.insert(tk.END, f'{lst}\n')
+        output_text.configure(state='disabled')
 
 def on_click_generate():
     """a function for a button that displays the result of the put_temp() function on the screen"""
