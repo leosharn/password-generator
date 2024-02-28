@@ -290,16 +290,31 @@ def put_temp(temp):
     temp = is_digits(is_digits_check, temp)
     temp = is_lower(is_lower_check, temp)
     temp = is_upper(is_upper_check, temp)
-    for_gen = is_punctual(is_punctual_check, temp)
-    for_gen = is_problematic(is_problematic_check, for_gen)
+    temp = is_punctual(is_punctual_check, temp)
+    for_gen = is_problematic(is_problematic_check, temp)
     output_text.configure(state='normal')
     output_text.delete('1.0', 'end')
-    # Check if at least one checkbox is checked
-    if (not (is_digits_check or is_lower_check or is_upper_check or is_punctual_check)) :
+    # Check if at least one checkbox is checked except is_punctual
+    if ((not (is_digits_check or is_lower_check or is_upper_check or is_punctual_check)) 
+        or (is_punctual_check and (not (is_digits_check or is_lower_check or is_upper_check)))):
         output_text.configure(state='normal')
         output_text.delete('1.0', 'end')
-        output_text.insert(tk.END, "Please select at least one attribute for password generation")
+        output_text.insert(tk.END, "Please select correct attributes for password generation")
         output_text.configure(state='disabled')
+
+    elif (is_upper_check) and not (is_digits_check and is_lower_check and is_punctual_check):
+        list_gen = []
+        print(for_gen)
+        while True:
+            shuffled = list(for_gen)
+            random.shuffle(shuffled)
+            generated_string = (''.join(shuffled))[:length]
+
+            if generated_string in list_gen:
+                continue
+            list_gen.append(generated_string)
+            if len(list_gen) == 10:
+                break
     else:
         list_gen = []
         while True:
@@ -314,15 +329,16 @@ def put_temp(temp):
                 (sum(c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' for c in generated_string) > 2)):
                 continue
 
+
             if generated_string in list_gen:
                 continue
             list_gen.append(generated_string)
             if len(list_gen) == 10:
                 break
 
-        for lst in list_gen:
-            output_text.insert(tk.END, f'{lst}\n')
-        output_text.configure(state='disabled')
+    for lst in list_gen:
+        output_text.insert(tk.END, f'{lst}\n')
+    output_text.configure(state='disabled')
 
 def on_click_generate():
     """a function for a button that displays the result of the put_temp() function on the screen"""
